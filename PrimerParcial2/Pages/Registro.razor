@@ -1,0 +1,209 @@
+﻿@page "/Registro"
+@using PrimerParcial2.Entidades;
+@using PrimerParcial2.Controllers;
+
+<h1>Registro Articulos</h1>
+
+<EditForm Model="@articulos" OnValidSubmit="Guardar">
+    <DataAnnotationsValidator />
+
+    <div class="container">
+
+        <label for="ArticulosId" class="col-md-2 col-form-label">ArticulosId</label>
+        <input type="number" id="ArticulosId" class="col-md-2 form-check" @bind="articulos.ArticulosId" />
+        <ValidationMessage For="@(() => articulos.ArticulosId)" />
+        <br />
+        <button type="button" class="col-md-2 btn btn-info" @onclick="Buscar">Buscar</button>
+
+    </div>
+
+    <div class="container">
+
+        <label for="Fecha" class="col-md-2 col-form-label">Fecha</label>
+        <input type="date" id="Fecha" class="col-md-2 form-check" @bind="articulos.Fecha" />
+        <ValidationMessage For="@(() => articulos.Fecha)" />
+
+    </div>
+
+    <div class="container">
+
+        <label for="Descripcion" class="col-md-2 col-form-label">Descripcion</label>
+        <input type="text" id="Descripcion" class="col-md-2 form-check" @bind="articulos.Descripcion" />
+        <ValidationMessage For="@(() => articulos.Descripcion)" />
+
+    </div>
+    <div class="container">
+
+        <label for="Costo" class="col-md-2 col-form-label">Costo</label>
+        <input type="number" id="Costo" class="col-md-2 form-check" @bind="articulos.Costo" />
+        <ValidationMessage For="@(() => articulos.Costo)" />
+
+    </div>
+    <div class="container">
+
+        <label for="Ganancia" class="col-md-2 col-form-label">Ganancia</label>
+        <input type="number" id="Ganancia" class="col-md-2 form-check" @bind="articulos.Ganancia" />
+        <ValidationMessage For="@(() => articulos.Ganancia)" />
+
+    </div>
+    <div class="container">
+
+        <label for="Precio" class="col-md-2 col-form-label">Precio</label>
+        <input type="number" id="Precio" class="col-md-2 form-check" readonly="readonly" @bind="articulos.Precio" />
+        <ValidationMessage For="@(() => articulos.Precio)" />
+
+    </div>
+
+    <br />
+    <br />
+
+    <ValidationSummary />
+
+    <div class="form-group">
+
+        <button type="button" class="col-md-2 btn btn-info" @onclick="Limpiar">Limpiar</button>
+        <button type="submit" class="col-md-2 btn btn-success">Guardar</button>
+        <button type="button" class="col-md-2 btn btn-danger" @onclick="Eliminar">Eliminar</button>
+
+
+    </div>
+
+
+    <p class="form-text">@Mensaje</p>
+
+</EditForm>
+
+
+
+
+
+@code {
+
+    private Articulos articulos = new Articulos();
+    private ControllersArticulos controllers = new ControllersArticulos();
+
+    private string Mensaje;
+
+    private void Guardar()
+    {
+        try
+        {
+            articulos.Precio = articulos.Costo + ((articulos.Costo) * (articulos.Ganancia / 100));
+
+            if (controllers.Buscar(articulos.ArticulosId) != null)
+            {
+                controllers.Modificar(articulos);
+                Limpiar();
+                Mensaje = "Modifico";
+
+
+            }
+            else
+            {
+                if (articulos.ArticulosId == 0)
+                {
+                    controllers.Guardar(articulos);
+                    Limpiar();
+                    Mensaje = "Guardo";
+
+                }
+                else
+                {
+                    Mensaje = "Id debe ser igual a 0 para guardar";
+                }
+            }
+
+        }
+        catch (Exception)
+        {
+
+            throw;
+        }
+    }
+    private void Limpiar()
+    {
+        try
+        {
+            articulos = new Articulos();
+            articulos.ArticulosId = 0;
+            articulos.Fecha = DateTime.Now;
+            articulos.Descripcion = string.Empty;
+            articulos.Costo = 0;
+            articulos.Ganancia = 0;
+            articulos.Precio = 0;
+
+        }
+        catch (Exception)
+        {
+
+            throw;
+        }
+    }
+
+    private void Buscar()
+    {
+        try
+        {
+            if (controllers.Buscar(articulos.ArticulosId) != null)
+            {
+
+                articulos = controllers.Buscar(articulos.ArticulosId);
+                articulos.ArticulosId = articulos.ArticulosId;
+                articulos.Fecha = articulos.Fecha;
+                articulos.Descripcion = articulos.Descripcion;
+                articulos.Costo = articulos.Costo;
+                articulos.Ganancia = articulos.Ganancia;
+                articulos.Precio = articulos.Precio;
+
+
+
+            }
+            else
+            {
+                Mensaje = "Id no existe";
+            }
+
+        }
+        catch (Exception)
+        {
+
+            throw;
+        }
+    }
+
+    private void Eliminar()
+    {
+        try
+        {
+            if (articulos.ArticulosId == 0)
+            {
+                if (controllers.Buscar(articulos.ArticulosId) != null)
+                {
+                    controllers.Eliminar(articulos.ArticulosId);
+
+
+                }
+                else
+                {
+                    Mensaje = "Id no existe";
+                }
+
+            }
+            else
+            {
+                Mensaje = "Selecione un ID que exista";
+            }
+
+        }
+        catch (Exception)
+        {
+
+            throw;
+        }
+    }
+
+
+
+
+
+}
